@@ -1,0 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+@import url('https://unpkg.com/leaflet@1.7.1/dist/leaflet.css');
+
+// Ocupar fuente externa en el proyecto
+$body-font-family: 'Quicksand', sans-serif;
+
+// Configuracion de pesos de la fuente
+$font-weights: (
+  'thin': 300,
+  'light': 300,
+  'regular': 400,
+  'medium': 500,
+  'bold': 600,
+  'black': 700,
+);
