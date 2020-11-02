@@ -28,7 +28,7 @@
         </template>
       </v-data-table>
     </v-card>
-    <NuevaEstacion :dialog="dialog" @cancel="dialog = false" />
+    <NuevaEstacion v-if="dialog" :dialog="dialog" @cancel="dialog = false" />
   </v-container>
 </template>
 
