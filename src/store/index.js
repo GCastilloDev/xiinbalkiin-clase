@@ -15,6 +15,9 @@ export default new Vuex.Store({
     SHOW_MARKERS(state) {
       state.pintaMarcadores = true;
     },
+    ELIMINAR_ESTACION(state, index) {
+      state.estaciones.splice(index, 1);
+    },
   },
   actions: {
     agregarEstacion({ commit }, payload) {
@@ -22,6 +25,9 @@ export default new Vuex.Store({
     },
     pintaLosMarcadores({ commit }) {
       commit('SHOW_MARKERS');
+    },
+    eliminarEstacionStorage({ commit }, index) {
+      commit('ELIMINAR_ESTACION', index);
     },
   },
   modules: {},
