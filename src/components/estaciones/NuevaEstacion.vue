@@ -4,7 +4,7 @@
       <v-card>
         <v-card-title class="headline"> Agregar nueva estación </v-card-title>
         <v-card-text>
-          <v-form ref="form" v-model="valid" lazy-validation>
+          <v-formmapa>
             <v-row>
               <v-col cols="12" class="mb-0 pb-0">
                 <v-text-field
