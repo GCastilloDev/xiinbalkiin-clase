@@ -6,6 +6,8 @@
 import L from "leaflet";
 import { ruta } from "../common/Ruta";
 import { mapState } from "vuex";
+import { db } from "../common/Firebase";
+
 
 export default {
   name: "MapaComponent",
@@ -14,13 +16,40 @@ export default {
   },
   data: () => ({
     mapa: null,
+    markers: []
   }),
   methods: {
     async init() {
       await this.obtenerPosicion();
       await this.pintarMapa();
       await this.pintarRuta();
+      this.listenerEstaciones();
       // await this.pintarMarcadores();
+    },
+    listenerEstaciones() {
+      db.collection("estaciones").onSnapshot((snapshot) => {
+        snapshot.docChanges().forEach( change => {
+
+          let latitud = change.doc.data().coordenadas.latitude;
+          let longitud = change.doc.data().coordenadas.longitude;
+          let idFirebase = change.doc.id;
+
+           if (change.type === "added") {
+              this.pintarMarcador(idFirebase, [latitud, longitud]);
+            }
+            if (change.type === "modified") {
+              const index = this.markers.findIndex(e => e.idFirebase == idFirebase);
+              const marker = this.markers[index].marker;
+              marker.setLatLng([latitud, longitud]);
+            }
+            if (change.type === "removed") {
+              const index = this.markers.findIndex(e => e.idFirebase == idFirebase);
+              const marker = this.markers[index].marker;
+              this.mapa.removeLayer(marker);
+              this.markers.slice(index, 1);
+            }
+        })
+      })
     },
     pintarMarcadores() {
       this.estaciones.forEach((e) => {
@@ -29,6 +58,7 @@ export default {
 
         this.pintarMarcador([latitud, longitud]);
       });
+      console.log(this.map);
     },
     pintarMapa() {
       const contenedorMapa = this.$refs.contenedorMapa;
@@ -45,6 +75,7 @@ export default {
       }).addTo(this.mapa);
     },
     pintarMarcador(
+      id,
       coordenadas,
       avatar = "https://firebasestorage.googleapis.com/v0/b/xiinbalkiin-4b927.appspot.com/o/markers%2Fparada-de-autobus.svg?alt=media&token=9142217d-914c-4e55-8206-dceeab2490ba"
     ) {
@@ -54,7 +85,14 @@ export default {
         popupAnchor: [-3, -76],
       });
 
-      L.marker(coordenadas, { icon: myIcon }).addTo(this.mapa);
+      const marker = L.marker(coordenadas, { icon: myIcon });
+      marker.addTo(this.mapa);
+      const dataMarker = {
+        idFirebase: id,
+        marker: marker
+      };
+
+      this.markers.push(dataMarker);
     },
     pintarRuta() {
       L.geoJSON(ruta, {
@@ -80,7 +118,7 @@ export default {
         let latitud = coordenadas.coords.latitude;
         let longitud = coordenadas.coords.longitude;
 
-        this.pintarMarcador(
+        this.pintarMarcador("user", 
           [latitud, longitud],
           "https://firebasestorage.googleapis.com/v0/b/xiinbalkiin-4b927.appspot.com/o/markers%2Fpersona.svg?alt=media&token=8e15f569-a31b-409b-95c3-3791824978d4"
         );
@@ -91,6 +129,9 @@ export default {
     ...mapState(["estaciones", "pintaMarcadores"]),
   },
   watch: {
+    estaciones: function() {
+      console.log("CAMBIOOO");
+    },
     pintaMarcadores: function() {
       if(this.pintaMarcadores == true) this.pintarMarcadores();
     }
