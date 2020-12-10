@@ -158,6 +158,7 @@ export default {
             const index = this.estaciones.findIndex(
               (e) => e.idFirebase == idFirebase
             );
+            this.estaciones[index] = "";
             this.estaciones[index] = estacion;
           }
           if (change.type === "removed") {
