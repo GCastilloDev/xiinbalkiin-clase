@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-app-bar color="deep-purple accent-4" dense dark>
+    <v-app-bar color="#E95020" dense dark>
       <v-app-bar-nav-icon
         v-if="session"
         @click="mostrarNavigationDrawer = true"
@@ -8,7 +8,7 @@
 
       <v-spacer></v-spacer>
 
-      <v-toolbar-title>Xiinbalkin</v-toolbar-title>
+      <v-toolbar-title>Xiinbalkiin</v-toolbar-title>
 
       <v-spacer></v-spacer>
 

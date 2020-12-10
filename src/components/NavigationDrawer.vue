@@ -6,6 +6,11 @@
       absolute
       temporary
     >
+      <v-list-item>
+        <v-list-item-content>
+          <v-img src="../assets/logo.png"></v-img>
+        </v-list-item-content>
+      </v-list-item>
       <v-divider></v-divider>
 
       <v-list dense>
