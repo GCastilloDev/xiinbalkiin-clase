@@ -92,7 +92,7 @@ export default {
 
 .video {
   position: absolute;
-  max-width: 100vw;
+  width: 100vw;
   // max-width: 300%;
   // width: 100%;
 }
