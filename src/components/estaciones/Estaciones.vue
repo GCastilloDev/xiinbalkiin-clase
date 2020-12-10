@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapActions } from "vuex";
 import { db, storage } from "../../common/Firebase";
 
 // Componentes
@@ -56,6 +56,9 @@ import EditarEstacion from "../estaciones/EditarEstacion";
 
 export default {
   name: "EstacionesComponent",
+  mounted() {
+    this.listenerEstaciones();
+  },
   components: {
     NuevaEstacion,
     EditarEstacion,
@@ -76,11 +79,18 @@ export default {
       dialog: false,
       dialogEdit: false,
       estacion: {},
+      estaciones: [],
     };
   },
   methods: {
     ...mapActions(["eliminarEstacionStorage"]),
     async eliminarEstacion(item) {
+      const isDelete = confirm(
+        "¿Desea eliminar esta estación? Esta acción no podrá deshacerse."
+      );
+
+      if (!isDelete) return;
+
       const { rutaStorage } = item;
       const { idFirebase } = item;
 
@@ -122,9 +132,46 @@ export default {
         (estacion) => estacion.idFirebase == idFirebase
       );
     },
+    listenerEstaciones() {
+      db.collection("estaciones").onSnapshot((snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+          let latitud = change.doc.data().coordenadas.latitude;
+          let longitud = change.doc.data().coordenadas.longitude;
+          let nombre = change.doc.data().nombre;
+          let imagen = change.doc.data().urlImagen;
+          let idFirebase = change.doc.id;
+          let rutaStorage = change.doc.data().rutaStorage || null;
+
+          let estacion = {
+            idFirebase,
+            nombre,
+            imagen,
+            latitud,
+            longitud,
+            rutaStorage,
+          };
+
+          if (change.type === "added") {
+            this.estaciones.unshift(estacion);
+          }
+          if (change.type === "modified") {
+            const index = this.estaciones.findIndex(
+              (e) => e.idFirebase == idFirebase
+            );
+            this.estaciones[index] = estacion;
+          }
+          if (change.type === "removed") {
+            const index = this.estaciones.findIndex(
+              (e) => e.idFirebase == idFirebase
+            );
+            this.estaciones.splice(index, 1);
+          }
+        });
+      });
+    },
   },
   computed: {
-    ...mapState(["estaciones"]),
+    // ...mapState(["estaciones"]),
   },
 };
 </script>

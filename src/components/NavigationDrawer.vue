@@ -1,26 +1,51 @@
 <template>
   <div>
-    <v-navigation-drawer v-model="drawer" absolute temporary>
-      <v-list-item>
-        <v-list-item-avatar>
-          <v-img src="https://randomuser.me/api/portraits/men/78.jpg"></v-img>
-        </v-list-item-avatar>
-
-        <v-list-item-content>
-          <v-list-item-title>John Leider</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-
+    <v-navigation-drawer
+      v-model="localDrawer"
+      @input="toggleDrawer()"
+      absolute
+      temporary
+    >
       <v-divider></v-divider>
 
       <v-list dense>
-        <v-list-item v-for="item in items" :key="item.title" link>
+        <v-list-item link to="/">
           <v-list-item-icon>
-            <v-icon>{{ item.icon }}</v-icon>
+            <v-icon>mdi-home</v-icon>
           </v-list-item-icon>
 
           <v-list-item-content>
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
+            <v-list-item-title>Inicio</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item link v-if="rol == 'admin'" to="/estaciones">
+          <v-list-item-icon>
+            <v-icon>mdi-file-table</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>Estaciones de autobus</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item link v-if="rol == 'admin' || rol == 'chofer'">
+          <v-list-item-icon>
+            <v-icon>mdi-seat</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>Contador de asientos</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item link @click="cerrarSesion">
+          <v-list-item-icon>
+            <v-icon>mdi-logout-variant</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>Cerrar sesión</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -29,6 +54,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "NavigationDrawerComponent",
   props: {
@@ -38,15 +64,30 @@ export default {
   },
   data() {
     return {
-      items: [
-        { title: "Home", icon: "dashboard" },
-        { title: "About", icon: "question_answer" },
-      ],
+      rol: "",
+      localDrawer: false,
     };
   },
+  methods: {
+    toggleDrawer() {
+      this.$emit("toggleDrawer", this.localDrawer);
+    },
+    cerrarSesion() {
+      this.localDrawer = false;
+      this.toggleDrawer();
+      sessionStorage.clear();
+      if (this.$route.path != "/") this.$router.push("/");
+      this.$store.state.session = false;
+    },
+  },
+  computed: {
+    ...mapState(["session"]),
+  },
   watch: {
-    drawer: function () {
-      if (!this.drawer) this.$emit("cerrar");
+    drawer(val) {
+      this.rol = sessionStorage.rol;
+      console.log(val);
+      this.localDrawer = val;
     },
   },
 };
