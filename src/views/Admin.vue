@@ -1,8 +1,8 @@
 <template>
-  <div>
-    <h1>Administrador</h1>
+  <v-container>
+    <h1 class="text-center">Administrador de estaciones</h1>
     <Estaciones />
-  </div>
+  </v-container>
 </template>
 
 <script>

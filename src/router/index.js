@@ -28,10 +28,25 @@ const routes = [
     beforeEnter: ifAuthenticated,
   },
   {
+    path: "/contador-asientos",
+    name: "ContadorAsientos",
+    component: () =>
+      import(
+        /* webpackChunkName: "ContadorAsientos" */ "../views/ContadorAsientos.vue"
+      ),
+    beforeEnter: ifAuthenticated,
+  },
+  {
     path: "/login",
     name: "Login",
     component: () =>
       import(/* webpackChunkName: "Login" */ "../views/Login.vue"),
+  },
+  {
+    path: "/prueba",
+    name: "Prueba",
+    component: () =>
+      import(/* webpackChunkName: "Prueba" */ "../views/Prueba.vue"),
   },
 ];
 
