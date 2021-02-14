@@ -17,6 +17,11 @@ export default {
     mapa: null,
     markers: [],
     autobus: [],
+    ubicacionUsuario: {
+      latitud: 0,
+      longitud: 0,
+    },
+    metrosPorMinuto: 348,
   }),
   methods: {
     async init() {
@@ -49,12 +54,23 @@ export default {
             );
             const marker = this.autobus[index].marker;
 
+            const distancia = this.mapa.distance(
+              [latitud, longitud],
+              [this.ubicacionUsuario.latitud, this.ubicacionUsuario.longitud]
+            );
+            const tiempo = (distancia / this.metrosPorMinuto).toFixed(2);
+
             const message =
               asientosDisponibles < 1
                 ? "Sin asientos"
                 : `Asientos disponibles: ${asientosDisponibles}`;
 
-            marker.bindPopup(`<h1>${message}</h1>`).openPopup();
+            marker
+              .bindPopup(
+                `<h1>${message}</h1>
+             <h2>Tiempo aprox. ${tiempo} minutos</h2>`
+              )
+              .openPopup();
             marker.setLatLng([latitud, longitud]);
           }
           if (change.type === "removed") {
@@ -145,6 +161,12 @@ export default {
         popupAnchor: [0, -13],
       });
 
+      const distancia = this.mapa.distance(coordenadas, [
+        this.ubicacionUsuario.latitud,
+        this.ubicacionUsuario.longitud,
+      ]);
+      const tiempo = (distancia / this.metrosPorMinuto).toFixed(2);
+
       const message =
         asientosDisponibles < 1
           ? "Sin asientos"
@@ -152,7 +174,12 @@ export default {
 
       const marker = L.marker(coordenadas, { icon: myIcon });
       marker.addTo(this.mapa);
-      marker.bindPopup(`<h1>${message}</h1>`).openPopup();
+      marker
+        .bindPopup(
+          `<h1>${message}</h1>
+        <h2>Tiempo aprox. ${tiempo} minutos</h2>`
+        )
+        .openPopup();
 
       const dataMarker = {
         idFirebase: id,
@@ -235,6 +262,9 @@ export default {
       navigator.geolocation.getCurrentPosition((coordenadas) => {
         let latitud = coordenadas.coords.latitude;
         let longitud = coordenadas.coords.longitude;
+
+        this.ubicacionUsuario.latitud = latitud;
+        this.ubicacionUsuario.longitud = longitud;
 
         this.pintarMarcador(
           "user",
