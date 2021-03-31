@@ -74,6 +74,7 @@ export default {
         },
         { text: "Latitud", value: "latitud" },
         { text: "Longitud", value: "longitud" },
+        { text: "Creado por", value: "creado" },
         { text: "Detalles", value: "detalles" },
       ],
       dialog: false,
@@ -135,20 +136,22 @@ export default {
     listenerEstaciones() {
       db.collection("estaciones").onSnapshot((snapshot) => {
         snapshot.docChanges().forEach((change) => {
-          let latitud = change.doc.data().coordenadas.latitude;
-          let longitud = change.doc.data().coordenadas.longitude;
-          let nombre = change.doc.data().nombre;
-          let imagen = change.doc.data().urlImagen;
-          let idFirebase = change.doc.id;
-          let rutaStorage = change.doc.data().rutaStorage || null;
+          const latitud = change.doc.data().coordenadas.latitude;
+          const longitud = change.doc.data().coordenadas.longitude;
+          const nombre = change.doc.data().nombre;
+          const imagen = change.doc.data().urlImagen;
+          const idFirebase = change.doc.id;
+          const rutaStorage = change.doc.data().rutaStorage || null;
+          const creado = change.doc.data().creado;
 
-          let estacion = {
+          const estacion = {
             idFirebase,
             nombre,
             imagen,
             latitud,
             longitud,
             rutaStorage,
+            creado,
           };
 
           if (change.type === "added") {

@@ -28,6 +28,13 @@ const routes = [
     beforeEnter: ifAuthenticated,
   },
   {
+    path: "/usuarios",
+    name: "Usuarios",
+    component: () =>
+      import(/* webpackChunkName: "Usuarios" */ "../components/usuarios/Usuarios.vue"),
+    beforeEnter: ifAuthenticated,
+  },
+  {
     path: "/contador-asientos",
     name: "ContadorAsientos",
     component: () =>

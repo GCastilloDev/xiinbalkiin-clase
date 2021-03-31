@@ -188,6 +188,7 @@ export default {
         coordenadas: coordenadas,
         urlImagen: this.estacion.imgUrl,
         rutaStorage: this.estacion.rutaStorage,
+        creado: sessionStorage.nombre,
       };
 
       db.collection("estaciones")

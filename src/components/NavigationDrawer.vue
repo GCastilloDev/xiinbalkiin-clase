@@ -35,6 +35,16 @@
             </v-list-item-content>
           </v-list-item>
 
+          <v-list-item link v-if="rol == 'admin'" to="/usuarios">
+            <v-list-item-icon>
+              <v-icon>mdi-account-supervisor</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+              <v-list-item-title>Usuarios</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+
           <v-list-item
             link
             v-if="rol == 'admin' || rol == 'chofer'"

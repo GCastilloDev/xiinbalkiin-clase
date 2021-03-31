@@ -44,6 +44,8 @@
 </template>
 
 <script>
+import { db } from "../common/Firebase";
+
 export default {
   name: "Login",
   data: () => ({
@@ -55,30 +57,52 @@ export default {
     errorMessage: "",
   }),
   methods: {
-    iniciarSesion() {
-      if (this.user.user == "admin" && this.user.psw == "admin") {
-        sessionStorage.setItem("sessionStart", true);
-        sessionStorage.setItem("rol", "admin");
-        this.$store.state.session = true;
-        this.$router.push("/");
-        return;
+    async iniciarSesion() {
+      try {
+        const response = await db
+          .collection("usuarios")
+          .where("usuario", "==", this.user.user)
+          .get();
+
+        if (response.docs.length === 0) {
+          this.error = true;
+          this.errorMessage = "Usuario y/o contraseña son incorrectas";
+
+          setTimeout(() => {
+            this.error = false;
+            this.errorMessage = "";
+          }, 2000);
+
+          return true;
+        }
+
+        if (
+          response.docs.length > 0 &&
+          response.docs[0].data().psw === this.user.psw
+        ) {
+          const nombre = `${response.docs[0].data().nombre} ${
+            response.docs[0].data().apellidos
+          }`;
+          sessionStorage.setItem("sessionStart", true);
+          sessionStorage.setItem("rol", response.docs[0].data().rol);
+          sessionStorage.setItem("id", response.docs[0].id);
+          sessionStorage.setItem("nombre", nombre);
+
+          this.$store.state.session = true;
+          this.$router.push("/");
+          return true;
+        }
+
+        this.error = true;
+        this.errorMessage = "Usuario y/o contraseña son incorrectas";
+
+        setTimeout(() => {
+          this.error = false;
+          this.errorMessage = "";
+        }, 2000);
+      } catch (error) {
+        console.warn(error);
       }
-
-      if (this.user.user == "chofer" && this.user.psw == "chofer") {
-        sessionStorage.setItem("sessionStart", true);
-        sessionStorage.setItem("rol", "chofer");
-        this.$store.state.session = true;
-        this.$router.push("/");
-        return;
-      }
-
-      this.error = true;
-      this.errorMessage = "Usuario y/o contraseña son incorrectas";
-
-      setTimeout(() => {
-        this.error = false;
-        this.errorMessage = "";
-      }, 2000);
     },
   },
 };
